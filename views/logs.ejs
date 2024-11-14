@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>日志查看器</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+            color: #333;
+        }
+        .tabs-container {
+            position: sticky;
+            top: 0;
+            background: #f5f5f5;
+            padding: 10px 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .tabs {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 20px;
+            position: relative;
+            border-bottom: 1px solid #ddd;
+            padding: 0 20px;
+        }
+        .tab {
+            padding: 12px 20px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            color: #666;
+            font-size: 16px;
+            position: relative;
+            transition: all 0.3s ease;
+            border-radius: 8px 8px 0 0;
+        }
+        .tab::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: #007bff;
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+        .tab:hover {
+            color: #007bff;
+            background: rgba(0,123,255,0.1);
+        }
+        .tab.active {
+            color: #007bff;
+            font-weight: bold;
+        }
+        .tab.active::after {
+            transform: scaleX(1);
+        }
+        .log-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+        .log-section {
+            padding-top: 60px;
+            margin-top: -60px;
+        }
+        .log-item {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+            border: 1px solid #eee;
+        }
+        .log-item:hover {
+            transform: translateX(5px);
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+        }
+        .log-item.error {
+            border-left: 4px solid #dc3545;
+            background: #fff5f5;
+        }
+        .log-item.login {
+            border-left: 4px solid #28a745;
+            background: #f6fff8;
+        }
+        .log-item.sign {
+            border-left: 4px solid #ffc107;
+            background: #fffdf5;
+        }
+        .log-item.usage {
+            border-left: 4px solid #17a2b8;
+            background: #f5fbff;
+            font-family: 'Consolas', monospace;
+        }
+        .log-item.info {
+            border-left: 4px solid #6c757d;
+            background: #f8f9fa;
+        }
+        
+        /* 数据高亮样式 */
+        .log-item.usage {
+            position: relative;
+            padding: 20px;
+        }
+        
+        .data-value {
+            font-weight: bold;
+            color: #0056b3;
+        }
+        
+        .timestamp {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 8px;
+        }
+        
+        /* YAML 格式的数据展示 */
+        .yaml-data {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-family: 'Consolas', monospace;
+        }
+        
+        .yaml-data .key {
+            color: #2c3e50;
+            font-weight: 500;
+        }
+        
+        .yaml-data .value {
+            color: #0056b3;
+            font-weight: bold;
+        }
+        
+        .loading, .empty-message {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-size: 1.1em;
+        }
+        
+        .error-message {
+            color: #dc3545;
+            padding: 15px;
+            background: #fff5f5;
+            border-radius: 8px;
+            margin: 10px 0;
+            border-left: 4px solid #dc3545;
+        }
+        
+        /* 添加流量使用情况的特殊样式 */
+        .usage-data {
+            font-family: 'Consolas', monospace;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 0;
+            white-space: pre-wrap;
+            color: #2c3e50;
+        }
+        
+        .usage-data:hover {
+            background: #f1f8ff;
+        }
+
+        .refresh-settings {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 0 20px 10px;
+            font-size: 14px;
+        }
+
+        .refresh-settings label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #666;
+        }
+
+        .refresh-settings select {
+            padding: 4px 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: white;
+            color: #333;
+            cursor: pointer;
+        }
+
+        .refresh-settings select:hover {
+            border-color: #007bff;
+        }
+
+        .refresh-button {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            background: #007bff;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .refresh-button:hover {
+            background: #0056b3;
+        }
+
+        .refresh-icon {
+            display: inline-block;
+            transition: transform 0.3s ease;
+        }
+
+        .refresh-button:hover .refresh-icon {
+            transform: rotate(180deg);
+        }
+
+        /* 添加刷新动画 */
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .refreshing .refresh-icon {
+            animation: spin 1s linear infinite;
+        }
+
+        /* 数据类日志的特殊样式 */
+        .log-item.usage {
+            background: linear-gradient(145deg, #f8fcff, #f0f7ff);
+            border: 1px solid #e3f2fd;
+            padding: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0, 123, 255, 0.05);
+        }
+
+        .usage-data {
+            display: grid;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: inset 0 2px 8px rgba(0, 123, 255, 0.05);
+        }
+
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            border-radius: 6px;
+            background: white;
+            transition: all 0.2s ease;
+            border: 1px solid #e6e9f0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .data-row::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: #e3f2fd;
+            transition: all 0.2s ease;
+        }
+
+        .data-row:hover {
+            transform: translateX(5px);
+            border-color: #bbdefb;
+            box-shadow: 0 4px 8px rgba(0, 123, 255, 0.08);
+        }
+
+        .data-row:hover::before {
+            background: #2196f3;
+        }
+
+        .data-row.highlight {
+            background: #e3f2fd;
+            border: 1px solid #bbdefb;
+            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.1);
+        }
+
+        .data-row.highlight::before {
+            background: #1976d2;
+            width: 6px;
+        }
+
+        .data-key {
+            color: #546e7a;
+            font-size: 0.95em;
+            font-weight: 500;
+            flex: 1;
+            padding-right: 15px;
+        }
+
+        .data-value {
+            font-weight: bold;
+            font-size: 1.1em;
+            color: #1976d2;
+            padding: 4px 10px;
+            background: rgba(33, 150, 243, 0.05);
+            border-radius: 4px;
+            min-width: 120px;
+            text-align: right;
+        }
+
+        .data-row.highlight .data-value {
+            color: #1565c0;
+            font-size: 1.2em;
+            background: rgba(25, 118, 210, 0.1);
+            padding: 6px 12px;
+        }
+
+        .usage-title {
+            color: #1976d2;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            border-radius: 6px;
+            background: #e3f2fd;
+            font-weight: bold;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(33, 150, 243, 0.1);
+        }
+
+        .timestamp {
+            color: #78909c;
+            font-size: 0.9em;
+            margin-bottom: 12px;
+            padding: 6px 12px;
+            background: rgba(0, 0, 0, 0.03);
+            border-radius: 4px;
+            display: inline-block;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body>
+    <h1>日志查看器</h1>
+    <div class="tabs-container">
+        <div class="tabs">
+            <button class="tab active" data-type="error">错误日志</button>
+            <button class="tab" data-type="login">登录日志</button>
+            <button class="tab" data-type="sign">签到日志</button>
+            <button class="tab" data-type="usage">使用情况</button>
+            <button class="tab" data-type="info">其他信息</button>
+        </div>
+        <div class="refresh-settings">
+            <label>
+                自动刷新：
+                <select id="refreshInterval">
+                    <option value="0">关闭</option>
+                    <option value="10">10秒</option>
+                    <option value="30" selected>30秒</option>
+                    <option value="60">1分钟</option>
+                    <option value="300">5分钟</option>
+                </select>
+            </label>
+            <button id="refreshNow" class="refresh-button">
+                <span class="refresh-icon">↻</span>
+                立即刷新
+            </button>
+        </div>
+    </div>
+    <div class="log-container" id="logContent">
+        <div class="loading">加载中...</div>
+    </div>
+
+    <script>
+        const tabs = document.querySelectorAll('.tab');
+        const logContent = document.getElementById('logContent');
+        const refreshInterval = document.getElementById('refreshInterval');
+        const refreshNow = document.getElementById('refreshNow');
+        let currentType = 'error';
+        let refreshTimer = null;
+
+        function formatLogContent(log, type) {
+            const timestamp = log.match(/\[(.*?)\]/)?.[0] || '';
+            const content = log.replace(/\[(.*?)\]/, '').trim();
+            
+            if (type === 'usage' && content.includes('流量使用情况')) {
+                const lines = content.split('\n');
+                const title = lines[0];
+                const dataLines = lines.slice(1).map(line => {
+                    if (line.includes(':')) {
+                        const [key, value] = line.split(':').map(s => s.trim());
+                        // 判断是否为重要数据
+                        const isHighlight = ['今日用量', '剩余流量', '过期时间'].includes(key);
+                        // 格式化数值显示
+                        const formattedValue = value.replace(/"/g, '');
+                        return `
+                            <div class="data-row ${isHighlight ? 'highlight' : ''}">
+                                <span class="data-key">${key}</span>
+                                <span class="data-value">${formattedValue}</span>
+                            </div>
+                        `;
+                    }
+                    return '';
+                }).join('');
+
+                return `
+                    <div class="log-item ${type}">
+                        <div class="timestamp">${timestamp}</div>
+                        <div class="usage-title">${title}</div>
+                        <div class="usage-data">
+                            ${dataLines}
+                        </div>
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="log-item ${type}">
+                    <div class="timestamp">${timestamp}</div>
+                    <div class="content">${content}</div>
+                </div>
+            `;
+        }
+
+        async function fetchLogs(type) {
+            logContent.innerHTML = '<div class="loading">加载中...</div>';
+            
+            try {
+                const response = await fetch(`/api/logs?type=${type}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    if (data.data.length === 0) {
+                        logContent.innerHTML = '<div class="empty-message">暂无日志记录</div>';
+                        return;
+                    }
+                    
+                    logContent.innerHTML = `
+                        <div id="${type}-section" class="log-section">
+                            ${data.data.map(log => formatLogContent(log, type)).join('')}
+                        </div>
+                    `;
+
+                    const section = document.getElementById(`${type}-section`);
+                    if (section) {
+                        section.scrollIntoView({ behavior: 'smooth' });
+                    }
+                } else {
+                    logContent.innerHTML = `
+                        <div class="error-message">
+                            获取日志失败: ${data.error || '未知错误'}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                logContent.innerHTML = `
+                    <div class="error-message">
+                        获取日志失败: ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        // 设置自动刷新
+        function setAutoRefresh(seconds) {
+            if (refreshTimer) {
+                clearInterval(refreshTimer);
+                refreshTimer = null;
+            }
+            
+            if (seconds > 0) {
+                refreshTimer = setInterval(() => {
+                    fetchLogs(currentType);
+                }, seconds * 1000);
+            }
+        }
+
+        // 初始化自动刷新
+        setAutoRefresh(30); // 默认30秒
+
+        // 监听刷新间隔变化
+        refreshInterval.addEventListener('change', (e) => {
+            const seconds = parseInt(e.target.value);
+            setAutoRefresh(seconds);
+        });
+
+        // 立即刷新按钮
+        refreshNow.addEventListener('click', () => {
+            refreshNow.classList.add('refreshing');
+            fetchLogs(currentType).finally(() => {
+                setTimeout(() => {
+                    refreshNow.classList.remove('refreshing');
+                }, 1000);
+            });
+        });
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const type = tab.dataset.type;
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                currentType = type;
+                fetchLogs(type);
+                
+                // 重置自动刷新
+                const seconds = parseInt(refreshInterval.value);
+                setAutoRefresh(seconds);
+            });
+        });
+
+        // 初始加载
+        fetchLogs(currentType);
+    </script>
+</body>
+</html> 

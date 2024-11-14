@@ -1,0 +1,25 @@
+{
+  "name": "sign",
+  "version": "1.0.0",
+  "description": "蒙了看片太多，流量扛不住，故使用自动签到程序获取免费流量",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "node ./index.js",
+    "build": "node ./index.js"
+  },
+  "author": "qiuyu",
+  "license": "MIT",
+  "dependencies": {
+    "@vercel/node": "^3.2.23",
+    "axios": "^1.6.1",
+    "cheerio": "^1.0.0-rc.12",
+    "dayjs": "^1.11.10",
+    "dotenv": "^16.3.1",
+    "ejs": "^3.1.10",
+    "express": "^4.21.1",
+    "js-yaml": "^4.1.0",
+    "node-schedule": "^2.1.1",
+    "nodemailer": "^6.9.7"
+  }
+}
