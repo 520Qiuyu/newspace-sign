@@ -11,3 +11,39 @@
 [11/8/2024, 4:41:02 AM] 邮件发送失败: No recipients defined
 [11/8/2024, 4:41:04 AM] 邮件发送失败: No recipients defined
 [11/8/2024, 4:44:38 AM] 签到失败: connect ETIMEDOUT 103.117.101.116:443
+[2024-12-07 14:11:55] 日志写入失败: Invalid log type: undefined
+[2024-12-07 14:29:35] 日志写入失败: Invalid log type: undefined
+[2024-12-07 14:29:35] [ikuuuVPN] 登录失败: Request failed with status code 405
+[2024-12-07 14:29:35] [ikuuuVPN] Request failed with status code 405
+[2024-12-07 14:34:21] 日志写入失败: Invalid log type: undefined
+[2024-12-07 14:34:21] [ikuuuVPN] 登录失败: Request failed with status code 405
+[2024-12-07 14:34:21] [ikuuuVPN] Request failed with status code 405
+[2024-12-07 14:36:41] 日志写入失败: Invalid log type: undefined
+[2024-12-07 14:36:42] [ikuuuVPN] 登录失败: Cannot read properties of undefined (reading 'join')
+[2024-12-07 14:36:42] [ikuuuVPN] Cannot read properties of undefined (reading 'join')
+[2024-12-07 14:39:03] 日志写入失败: Invalid log type: undefined
+[2024-12-07 14:39:03] [ikuuuVPN] 登录失败: Cannot read properties of undefined (reading 'join')
+[2024-12-07 14:39:03] [ikuuuVPN] Cannot read properties of undefined (reading 'join')
+[2024-12-07 14:39:25] 日志写入失败: Invalid log type: undefined
+[2024-12-07 14:39:25] [ikuuuVPN] 登录失败: cookies is not iterable
+[2024-12-07 14:39:25] [ikuuuVPN] cookies is not iterable
+[2024-12-07 14:40:08] 日志写入失败: Invalid log type: undefined
+[2024-12-07 14:40:08] [ikuuuVPN] 登录失败: cookies is not iterable
+[2024-12-07 14:40:08] [ikuuuVPN] cookies is not iterable
+[2024-12-07 14:40:46] 日志写入失败: Invalid log type: undefined
+[2024-12-07 14:40:46] [ikuuuVPN] 登录失败: cookies is not iterable
+[2024-12-07 14:40:46] [ikuuuVPN] cookies is not iterable
+[2024-12-07 14:41:36] 日志写入失败: Invalid log type: undefined
+[2024-12-07 14:41:37] [ikuuuVPN] 登录失败: cookies is not iterable
+[2024-12-07 14:41:37] [ikuuuVPN] cookies is not iterable
+[2024-12-07 14:43:58] 日志写入失败: Invalid log type: undefined
+[2024-12-07 14:43:59] [ikuuuVPN] 登录失败: cookies is not iterable
+[2024-12-07 14:43:59] [ikuuuVPN] cookies is not iterable
+[2024-12-07 14:44:57] 日志写入失败: Invalid log type: undefined
+[2024-12-07 14:44:57] [ikuuuVPN] 登录失败: cookies is not iterable
+[2024-12-07 14:44:57] [ikuuuVPN] cookies is not iterable
+[2024-12-07 14:45:18] 日志写入失败: Invalid log type: undefined
+[2024-12-07 14:45:19] 日志写入失败: Invalid log type: undefined
+[2024-12-07 14:45:20] 日志写入失败: Invalid log type: undefined
+[2024-12-07 14:46:39] 日志写入失败: Invalid log type: undefined
+[2024-12-07 14:48:57] 日志写入失败: Invalid log type: undefined
